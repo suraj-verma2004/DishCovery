@@ -23,9 +23,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-4#8md_=_xt@q27=mn!^%($pl(rl2s$2sognl9hhioeudk*(!4t'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+
+ALLOWED_HOSTS = ['dishcovery-n30n.onrender.com', '127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -129,3 +130,9 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels.layers.InMemoryChannelLayer",
     },
 }
+
+
+# Render to be trusted
+CSRF_TRUSTED_ORIGINS = [
+    'https://dishcovery-n30n.onrender.com',
+]
