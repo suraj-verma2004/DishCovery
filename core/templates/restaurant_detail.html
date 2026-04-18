@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ res.name }} | Intelligence Insights</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        
+        :root { --primary: #4318ff; --dark: #1b254b; --light: #f4f7fe; --accent: #05cd99; }
+        
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--light); color: #2b3674; margin: 0; }
+        
+        .res-hero {
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.7)), url('https://loremflickr.com/1200/500/restaurant,food/all?lock={{ res.id }}');
+            background-size: cover; background-position: center;
+            height: 350px; border-radius: 0 0 50px 50px;
+            display: flex; align-items: center; justify-content: center; color: white; padding: 20px;
+        }
+
+        .glass-card {
+            background: white; border-radius: 30px; padding: 30px;
+            margin-top: -60px; box-shadow: 0 15px 35px rgba(0,0,0,0.05); border: none;
+        }
+
+        .diet-box { padding: 6px 14px; border-radius: 12px; font-weight: 800; font-size: 0.75rem; display: inline-flex; align-items: center; border: 2px solid; }
+        .veg-box { color: #2e7d32; border-color: #2e7d32; background: #e8f5e9; }
+        .nonveg-box { color: #c62828; border-color: #c62828; background: #ffebee; }
+        .both-box { color: #f59e0b; border-color: #f59e0b; background: #fef3c7; }
+
+        .badge-premium { background: #f0f3ff; color: var(--primary); border-radius: 10px; padding: 8px 15px; font-weight: 700; font-size: 0.75rem; display: inline-block; margin: 4px; }
+
+        .missing-info-btn { 
+            border: 2px dashed #cbd5e0; border-radius: 20px; padding: 20px; 
+            transition: 0.3s; cursor: pointer; text-align: center; color: #718096;
+            background: rgba(255, 255, 255, 0.5); margin-top: 25px; font-size: 0.9rem;
+        }
+        .missing-info-btn:hover { border-color: var(--primary); color: var(--primary); background: #f0f3ff; }
+
+        @media (max-width: 768px) {
+            .res-hero { height: 280px; }
+            .glass-card { margin-top: -40px; padding: 20px; }
+            .btn-main { width: 100%; margin-top: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="position-absolute top-0 start-0 p-4" style="z-index: 10;">
+        <a href="{% url 'dashboard' %}" class="btn btn-light rounded-circle shadow-sm p-3"><i class="fas fa-arrow-left"></i></a>
+    </div>
+<div class="container mt-3">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-warning alert-dismissible fade show rounded-4 shadow-sm border-0 py-3" role="alert">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-check-circle me-3 fs-4 text-warning"></i>
+                    <div>
+                        <strong>Action Successful!</strong><br>
+                        <span class="small">{{ message }}</span>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+    <div class="res-hero">
+        <div class="text-center">
+            <h1 class="fw-800 mb-2" style="font-size: 3rem;">{{ res.name }}</h1>
+            <p class="opacity-75 fs-5"><i class="fas fa-location-dot me-2"></i>{{ res.location|title }}</p>
+        </div>
+    </div>
+
+    <div class="container mb-5">
+        <div class="row g-4">
+            <div class="col-lg-8 col-12">
+                <div class="glass-card">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+                        <div class="d-flex align-items-center gap-2 mb-3 mb-md-0">
+                            <span class="badge bg-success rounded-pill px-4 py-2 fs-6">{{ res.rating }} ★</span>
+                            
+                            {% with c=res.cuisine|lower %}
+                                {% if 'pure veg' in c %}
+                                    <div class="diet-box veg-box"><i class="fas fa-leaf me-2"></i>Pure Veg</div>
+                                {% elif 'both' in c or 'veg and non' in c %}
+                                    <div class="diet-box both-box"><i class="fas fa-utensils me-2"></i>Veg & Non-Veg</div>
+                                {% else %}
+                                    <div class="diet-box nonveg-box"><i class="fas fa-drumstick-bite me-2"></i>Non-Veg Only</div>
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+
+                        <a href="https://www.google.com/maps/search/?api=1&query={{ res.name|urlencode }}+{{ res.location|urlencode }}" 
+                           target="_blank" class="btn btn-primary btn-main rounded-pill px-4 py-2 fw-bold shadow-sm">
+                            <i class="fas fa-location-arrow me-2"></i>Navigate Now
+                        </a>
+                    </div>
+
+                    <h6 class="fw-800 text-muted text-uppercase mb-3 small">Intelligence Tags</h6>
+                    <div class="mb-4">
+                        <div class="badge-premium"><i class="fas fa-users me-1"></i> Family Friendly</div>
+                        <div class="badge-premium"><i class="fas fa-wallet me-1"></i> Value for Money</div>
+                        <div class="badge-premium"><i class="fas fa-graduation-cap me-1"></i> Student Spot</div>
+                        <div class="badge-premium"><i class="fas fa-bolt me-1"></i> Fast Service</div>
+                    </div>
+
+                    <h6 class="fw-800 text-muted text-uppercase mb-3 small">Data Summary</h6>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded-4">
+                                <p class="small text-muted mb-1">Locality</p>
+                                <h6 class="fw-bold mb-0">{% if res.locality %}{{ res.locality }}{% else %}<span class="text-danger">Address Needed</span>{% endif %}</h6>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded-4">
+                                <p class="small text-muted mb-1">Contact Phone</p>
+                                <h6 class="fw-bold mb-0">{% if res.phone %}{{ res.phone }}{% else %}<span class="text-danger">Phone Missing</span>{% endif %}</h6>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="missing-info-btn" data-bs-toggle="modal" data-bs-target="#editModal">
+                        <i class="fas fa-pen-to-square me-2"></i> <strong>Report Error?</strong> Update Diet, Locality or Phone details.
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-12">
+                <div class="card border-0 shadow-sm p-4 rounded-5 mb-4">
+                    <h5 class="fw-800 mb-3">Rate Experience</h5>
+                    <form action="{% url 'submit_rating' pk=res.id %}" method="POST">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <select name="user_rating" class="form-select rounded-4 py-3 fw-bold border-light bg-light">
+                                <option value="5">5 ★ (Excellent)</option>
+                                <option value="4">4 ★ (Very Good)</option>
+                                <option value="3" selected>3 ★ (Average)</option>
+                                <option value="2">2 ★ (Poor)</option>
+                                <option value="1">1 ★ (Terrible)</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 rounded-pill py-3 fw-bold shadow-sm">Submit Insight</button>
+                    </form>
+                    <p class="text-muted small mt-3 text-center mb-0">Based on <strong>{{ res.review_count }}</strong> community reviews.</p>
+                </div>
+
+                <div class="text-center">
+                    <button class="btn btn-link text-danger text-decoration-none fw-bold" data-bs-toggle="modal" data-bs-target="#reportModal">
+                        <i class="fas fa-flag me-1"></i> Report Inaccurate Information
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="reportModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-5 border-0 shadow-lg p-3">
+                <form action="{% url 'report_restaurant' res.id %}" method="POST">
+                    {% csrf_token %}
+                    <div class="modal-header border-0">
+                        <h5 class="fw-800 text-danger mb-0">Flag Incorrect Data</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <textarea name="reason" class="form-control bg-light border-0 rounded-4 p-3" rows="4" placeholder="Example: Restaurant is closed, address is wrong, or it's not Pure Veg..."></textarea>
+                    </div>
+                    <div class="modal-footer border-0">
+                        <button type="submit" class="btn btn-danger w-100 rounded-pill py-3 fw-bold">SEND REPORT</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered px-3">
+            <div class="modal-content p-4 rounded-5 border-0 shadow-lg">
+                <form action="{% url 'update_restaurant' pk=res.id %}" method="POST">
+                    {% csrf_token %}
+                    <h5 class="fw-800 text-primary text-center mb-4">Refine Intelligence</h5>
+                    
+                    <div class="mb-3">
+                        <label class="small fw-800 text-muted mb-2 ps-2">DIET CATEGORY*</label>
+                        <select name="diet_type" class="form-select p-3 bg-light border-0 rounded-4 fw-bold" required>
+                            <option value="Pure Veg" {% if 'pure veg' in res.cuisine|lower %}selected{% endif %}>Pure Veg Only</option>
+                            <option value="Veg and Non-Veg Both" {% if 'both' in res.cuisine|lower %}selected{% endif %}>Both (Veg & Non-Veg)</option>
+                            <option value="Non-Veg Only" {% if 'non-veg only' in res.cuisine|lower %}selected{% endif %}>Non-Veg Only</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="small fw-800 text-muted mb-2 ps-2">LOCALITY</label>
+                        <input type="text" name="locality" class="form-control p-3 bg-light border-0 rounded-4" value="{{ res.locality|default:'' }}">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="small fw-800 text-muted mb-2 ps-2">CONTACT PHONE</label>
+                        <input type="text" name="phone" class="form-control p-3 bg-light border-0 rounded-4" value="{{ res.phone|default:'' }}">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 rounded-pill py-3 fw-bold shadow">SAVE & SYNC ENGINE 🚀</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

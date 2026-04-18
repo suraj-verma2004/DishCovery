@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foodie Identity | DishCovery</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        
+        :root { --primary: #4318ff; --dark: #1b254b; --light: #f4f7fe; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--light); color: #2b3674; margin: 0; }
+        
+        .profile-header {
+            background: linear-gradient(135deg, #4318ff 0%, #110ad2 100%);
+            padding: 70px 0 140px; color: white; border-radius: 0 0 60px 60px; position: relative;
+        }
+        
+        .profile-avatar {
+            width: 110px; height: 110px; background: white; border-radius: 35px; 
+            border: 5px solid rgba(255,255,255,0.2); display: flex; align-items: center; 
+            justify-content: center; font-size: 3.5rem; margin: 0 auto 15px; shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .roadmap-container {
+            background: white; border-radius: 40px; padding: 35px;
+            margin-top: -90px; position: relative; z-index: 10;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.08);
+        }
+
+        /* Badge Grid */
+        .badge-card {
+            background: white; border-radius: 20px; padding: 15px; 
+            transition: 0.3s ease; height: 100%; display: flex;
+            flex-direction: column; align-items: center; justify-content: center;
+            border: 2px solid #e0e5f2; position: relative;
+        }
+        .active-badge { border-color: var(--primary); box-shadow: 0 10px 20px rgba(67, 24, 255, 0.1); }
+        .locked-badge { filter: grayscale(1); opacity: 0.4; background: #f8f9fa; border-style: dashed; }
+        .badge-icon { font-size: 2rem; margin-bottom: 5px; }
+
+        .progress-custom { height: 10px; border-radius: 10px; background: #e0e5f2; margin-bottom: 30px; }
+        .progress-bar-custom { border-radius: 10px; background: linear-gradient(90deg, #4318ff, #05cd99); }
+
+        .res-row {
+            background: white; border-radius: 18px; padding: 15px;
+            margin-bottom: 12px; border: 1px solid #e0e5f2; transition: 0.3s;
+        }
+        .res-row:hover { border-color: var(--primary); background: #f8faff; }
+
+        @media (max-width: 768px) {
+            .roadmap-container { padding: 20px; }
+            .badge-icon { font-size: 1.6rem; }
+            .col-6 { padding: 5px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="profile-header text-center">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-4 px-2">
+                <a href="{% url 'dashboard' %}" class="btn btn-light rounded-pill px-4 fw-bold shadow-sm btn-sm">← Dashboard</a>
+                <div class="bg-white bg-opacity-25 px-3 py-1 rounded-pill fw-bold text-white small">Level: {{ total_added }}</div>
+            </div>
+            <div class="profile-avatar">👤</div>
+            <h2 class="fw-800 mb-1">@{{ target_user.username }}</h2>
+            <p class="opacity-75 small"><i class="fas fa-map-marker-alt"></i> {{ user_profile.home_city|title }}</p>
+            {% if is_owner %}
+            <button class="btn btn-warning rounded-pill px-4 fw-bold btn-sm shadow" data-bs-toggle="modal" data-bs-target="#editModal">Edit Identity</button>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="container mb-5">
+        <div class="roadmap-container shadow-lg">
+            <h5 class="fw-800 text-primary mb-4 text-center">Foodie Roadmap (10 Levels)</h5>
+            
+            <div class="px-md-5">
+                <div class="d-flex justify-content-between small fw-bold mb-2">
+                    <span>Rank Progress</span>
+                    <span>{{ total_added }}/50 Contributions</span>
+                </div>
+                <div class="progress progress-custom">
+                    <div class="progress-bar progress-bar-custom" style="width: {% widthratio total_added 50 100 %}%"></div>
+                </div>
+            </div>
+
+
+
+<div class="card border-0 shadow-sm rounded-5 p-4 mb-4">
+    <h5 class="fw-800 mb-4">Your Foodie DNA</h5>
+    <div style="max-width: 400px; margin: auto;">
+        <canvas id="cuisineChart"></canvas>
+    </div>
+</div>
+
+            <div class="row g-2 g-md-3 justify-content-center text-center">
+                {% with c=total_added %}
+                
+                <div class="col-6 col-md-4 col-lg-2">
+                    <div class="badge-card {% if c >= 1 %}active-badge{% else %}locked-badge{% endif %}">
+                        <span class="badge-icon">🎯</span><p class="mb-0 fw-bold small">Contributor</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <div class="badge-card {% if c >= 5 %}active-badge{% else %}locked-badge{% endif %}">
+                        <span class="badge-icon">👅</span><p class="mb-0 fw-bold small">Taste Maker</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <div class="badge-card {% if c >= 5 %}active-badge{% else %}locked-badge{% endif %}">
+                        <span class="badge-icon">🥦</span><p class="mb-0 fw-bold small">Green Warrior</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <div class="badge-card {% if c >= 3 %}active-badge{% else %}locked-badge{% endif %}">
+                        <span class="badge-icon">🦉</span><p class="mb-0 fw-bold small">Night Owl</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <div class="badge-card {% if c >= 10 %}active-badge{% else %}locked-badge{% endif %}">
+                        <span class="badge-icon">🖋️</span><p class="mb-0 fw-bold small">Pro Reviewer</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <div class="badge-card {% if c >= 5 %}active-badge{% else %}locked-badge{% endif %}">
+                        <span class="badge-icon">🌍</span><p class="mb-0 fw-bold small">Global Foodie</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <div class="badge-card {% if c >= 15 %}active-badge{% else %}locked-badge{% endif %}">
+                        <span class="badge-icon">🚩</span><p class="mb-0 fw-bold small">Local Guide</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <div class="badge-card {% if c >= 5 %}active-badge{% else %}locked-badge{% endif %}">
+                        <span class="badge-icon">💸</span><p class="mb-0 fw-bold small">Budget Pro</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <div class="badge-card {% if c >= 25 %}active-badge{% else %}locked-badge{% endif %}">
+                        <span class="badge-icon">👑</span><p class="mb-0 fw-bold small">Elite Critic</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <div class="badge-card {% if c >= 50 %}active-badge{% else %}locked-badge{% endif %}">
+                        <span class="badge-icon">⭐</span><p class="mb-0 fw-bold small">Legend</p>
+                    </div>
+                </div>
+
+                {% endwith %}
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-lg-8 mx-auto">
+                <h5 class="fw-bold mb-4"><i class="fas fa-history me-2"></i>Contributions ({{ total_added }})</h5>
+                {% for res in my_restaurants %}
+                <div class="res-row d-flex justify-content-between align-items-center shadow-sm">
+                    <div>
+                        <h6 class="fw-bold mb-0">{{ res.name }}</h6>
+                        <small class="text-muted">{{ res.cuisine }}</small>
+                    </div>
+                 <div class="d-flex align-items-center gap-3">
+    <span class="badge bg-success rounded-pill px-3">{{ res.rating }} ★</span>
+    
+    {% if is_owner %}
+    <a href="{% url 'delete_restaurant' pk=res.id %}" 
+       class="text-danger ms-2" 
+       onclick="return confirm('Are you sure to delete \'{{ res.name }}\'?');"
+       title="Delete Restaurant">
+        <i class="fas fa-trash-can"></i>
+    </a>
+    {% endif %}
+</div>
+                </div>
+                {% empty %}
+                <p class="text-center text-muted">No data points contributed yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4 rounded-5 border-0 shadow">
+                <form action="{% url 'update_profile' %}" method="POST">
+                    {% csrf_token %}
+                    <h5 class="fw-800 mb-4">Identity Settings</h5>
+                    <div class="mb-3">
+                        <label class="small fw-bold mb-2">Home Base (City)</label>
+                        <input type="text" name="home_city" class="form-control bg-light border-0 p-3 rounded-4" value="{{ user_profile.home_city }}" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 rounded-pill py-3 fw-bold">SAVE SYNC</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+    const ctx = document.getElementById('cuisineChart').getContext('2d');
+    
+    const labels = {{ chart_labels|safe }};
+    const data = {{ chart_data|safe }};
+
+    new Chart(ctx, {
+        type: 'doughnut', 
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Contribution Count',
+                data: data,
+                backgroundColor: [
+                    '#4318ff', // Primary Blue
+                    '#05cd99', // Accent Green
+                    '#ffb547', // Yellow
+                    '#ff5b5b', // Red
+                    '#a3aed0'  // Gray
+                ],
+                hoverOffset: 15,
+                borderWidth: 0
+            }]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        usePointStyle: true,
+                        font: { family: 'Plus Jakarta Sans', weight: 'bold' }
+                    }
+                }
+            },
+            cutout: '70%' 
+        }
+    });
+</script>
+</body>
+</html>

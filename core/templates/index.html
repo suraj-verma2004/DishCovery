@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DishCovery | Next-Gen Food Intelligence</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        
+        :root { --primary: #4318ff; --dark: #1b254b; --accent: #05cd99; --gradient: linear-gradient(135deg, #4318ff 0%, #110ad2 100%); }
+        
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f4f7fe; color: var(--dark); overflow-x: hidden; }
+
+        /* Modern Navbar */
+        .navbar { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(0,0,0,0.05); padding: 20px 0; }
+        .navbar-brand { font-weight: 800; font-size: 1.8rem; letter-spacing: -1px; }
+
+        /* Hero Section */
+        .hero { 
+            background: linear-gradient(rgba(27, 37, 75, 0.85), rgba(27, 37, 75, 0.85)), 
+                        url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=2070') center/cover;
+            height: 95vh; display: flex; align-items: center; color: white; border-radius: 0 0 80px 80px;
+            position: relative; margin-bottom: -50px;
+        }
+        .hero-content h1 { font-size: 4.5rem; font-weight: 800; line-height: 1.1; margin-bottom: 25px; }
+        .text-gradient { background: linear-gradient(to right, #ffffff, #a3b1ff);
+             -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* Glass Cards */
+        .feature-card {
+            background: white; border-radius: 40px; padding: 45px;
+            border: 1px solid rgba(255,255,255,0.8); transition: 0.4s;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.05); height: 100%;
+        }
+        .feature-card:hover { transform: translateY(-15px); box-shadow: 0 30px 70px rgba(67, 24, 255, 0.15); }
+        .icon-box { 
+            width: 80px; height: 80px; border-radius: 25px; background: var(--light);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem; color: var(--primary); margin-bottom: 30px; transition: 0.3s;
+        }
+        .feature-card:hover .icon-box { background: var(--primary); color: white; transform: rotate(-10deg); }
+
+        /* Image Gallery */
+        .food-grid-img {
+            width: 100%; height: 300px; object-fit: cover; border-radius: 40px;
+            transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+        .food-grid-img:hover { transform: scale(1.05); filter: saturate(1.2); }
+
+        /* Stats Section */
+        .stat-badge { background: rgba(255,255,255,0.1); border-radius: 20px; padding: 15px 30px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px); }
+
+        /* CTA Button */
+        .btn-premium { 
+            background: var(--gradient); color: white; border: none; 
+            padding: 18px 45px; border-radius: 25px; font-weight: 800; 
+            box-shadow: 0 15px 30px rgba(67, 24, 255, 0.3); transition: 0.3s;
+        }
+        .btn-premium:hover { transform: scale(1.05); box-shadow: 0 20px 40px rgba(67, 24, 255, 0.4); color: white; }
+
+        @media (max-width: 768px) {
+            .hero-content h1 { font-size: 2.8rem; }
+            .hero { height: auto; padding: 120px 0 100px; border-radius: 0 0 40px 40px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand text-primary" href="#">DishCovery<span class="text-dark">.ai</span></a>
+            <div class="ms-auto d-none d-md-flex align-items-center gap-4">
+                <a href="{% url 'login' %}" class="text-dark fw-bold text-decoration-none small">LOGIN</a>
+                <a href="{% url 'register' %}" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">JOIN ENGINE</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero shadow-lg">
+        <div class="container hero-content text-center">
+            <div class="d-inline-block stat-badge mb-4" data-aos="fade-down">
+                <i class="fas fa-bolt text-warning me-2"></i> Powered by Community Intelligence
+            </div>
+            <h1 class="text-gradient" data-aos="zoom-in" data-aos-delay="200">Decoding India's <br> Taste Buds.</h1>
+            <p class="fs-5 opacity-75 mb-5 mx-auto" style="max-width: 700px;" data-aos="fade-up" data-aos-delay="400">
+                DishCovery isn't just a directory. It's a living, breathing database where community data meets smart analytics to find you the perfect meal.
+            </p>
+            <div class="d-flex justify-content-center gap-3 flex-wrap" data-aos="fade-up" data-aos-delay="600">
+                <a href="{% url 'register' %}" class="btn btn-premium btn-lg">START EXPLORING <i class="fas fa-arrow-right ms-2"></i></a>
+                <div class="d-flex align-items-center ms-md-3">
+                    <div class="avatar-group d-flex me-2">
+                        <img src="https://ui-avatars.com/api/?name=S&background=random" class="rounded-circle border border-2 border-white" width="40">
+                        <img src="https://ui-avatars.com/api/?name=V&background=random" class="rounded-circle border border-2 border-white ms-n2" width="40" style="margin-left: -15px;">
+                    </div>
+                    <span class="small opacity-75 fw-bold">Joined by 10k+ Foodies</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="container py-5" style="margin-top: 80px;">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h6 class="text-primary fw-800 text-uppercase letter-spacing-2">Why DishCovery?</h6>
+            <h2 class="display-5 fw-800">Software Intelligence.</h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="feature-card">
+                    <div class="icon-box"><i class="fas fa-microchip"></i></div>
+                    <h4 class="fw-800">AI Discover</h4>
+                    <p class="text-muted">Our logic matches your mood and diet with over 500+ restaurants instantly.</p>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="feature-card">
+                    <div class="icon-box"><i class="fas fa-layer-group"></i></div>
+                    <h4 class="fw-800">Versus Mode</h4>
+                    <p class="text-muted">Compare two restaurants side-by-side. Analyze stats, ratings, and vibes effortlessly.</p>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="feature-card">
+                    <div class="icon-box"><i class="fas fa-database"></i></div>
+                    <h4 class="fw-800">Live Data Sync</h4>
+                    <p class="text-muted">Crowdsourced intelligence ensures you always see the latest phone numbers and localities.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-5">
+        <div class="container">
+            <div class="bg-white rounded-5 p-5 shadow-sm">
+                <div class="row align-items-center g-5">
+                    <div class="col-lg-6" data-aos="fade-right">
+                        <h2 class="display-6 fw-800 mb-4">Every Byte <br> counts.</h2>
+                        <p class="text-muted fs-5 mb-4">From local dhabas in Ballia to premium cafes in Prayagraj, we map them all. Join us in building India's most accurate restaurant network.</p>
+                        <ul class="list-unstyled fw-bold text-primary">
+                            <li class="mb-2"><i class="fas fa-check-circle me-2"></i> 100% Accurate Veg/Non-Veg Indicators</li>
+                            <li class="mb-2"><i class="fas fa-check-circle me-2"></i> Verified Phone & Locality Details</li>
+                            <li class="mb-2"><i class="fas fa-check-circle me-2"></i> Community-driven Rating Engine</li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="row g-3">
+                            <div class="col-6" data-aos="zoom-in" data-aos-delay="100">
+                                <img src="https://images.unsplash.com/photo-1567620905732-2d1ec7bb7445?q=80&w=600" class="food-grid-img" alt="Pancakes">
+                            </div>
+                            <div class="col-6" data-aos="zoom-in" data-aos-delay="200">
+                                <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=600" class="food-grid-img" style="margin-top: 30px;" alt="Bowl">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="text-center py-5 mt-5" style="background: var(--dark); border-radius: 60px 60px 0 0;">
+        <div class="container text-white">
+            <h3 class="fw-800 mb-4">DishCovery Intelligence Network</h3>
+            <p class="opacity-50 small mb-4">Building the future of food analytics, one restaurant at a time.</p>
+            <div class="d-flex justify-content-center gap-4 mb-4">
+                <a href="#" class="text-white opacity-75"><i class="fab fa-instagram fa-lg"></i></a>
+                <a href="#" class="text-white opacity-75"><i class="fab fa-github fa-lg"></i></a>
+                <a href="#" class="text-white opacity-75"><i class="fab fa-linkedin fa-lg"></i></a>
+            </div>
+            <hr class="bg-light opacity-25">
+            <p class="small opacity-50 mb-0">© 2026 Crafted for Foodies in Prayagraj & Ballia.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 1000, once: true });
+    </script>
+</body>
+</html>
