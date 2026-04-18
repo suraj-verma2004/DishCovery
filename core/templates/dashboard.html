@@ -9,51 +9,69 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
         
-        :root { --primary: #4318ff; --sidebar-bg: #110e5d; --light: #f4f7fe; }
+        :root { --primary: #4318ff; --sidebar-grad: linear-gradient(180deg, #4318ff 0%, #110ad2 100%); --light: #f4f7fe; }
         
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--light); color: #2b3674; margin: 0; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--light); color: #2b3674; margin: 0; overflow-x: hidden; }
         
-        /* Sidebar Styling (Back to Bluish Premium) */
+        /* Sidebar Styling */
         .sidebar { 
-            width: 280px; height: 100vh; 
-            background: linear-gradient(180deg, #120352 0%, #191687 100%); 
-            position: fixed; padding: 30px; z-index: 1000; transition: 0.3s;
-            color: white;
+            width: 280px; height: 100vh; background: var(--sidebar-grad); 
+            position: fixed; padding: 30px; z-index: 2000; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: white; 
         }
-        .sidebar h3 { font-weight: 800; color: white; margin-bottom: 40px; }
+        .sidebar h3 { font-weight: 800; color: white; margin-bottom: 40px; letter-spacing: -1px; }
         .nav-link-custom { 
             display: flex; align-items: center; padding: 15px 20px; border-radius: 15px; 
             text-decoration: none; color: rgba(255,255,255,0.7); font-weight: 600; 
-            margin-bottom: 10px; transition: 0.3s; 
+            margin-bottom: 8px; transition: 0.3s; 
         }
-        .nav-link-custom i { margin-right: 15px; font-size: 1.2rem; }
+        .nav-link-custom i { margin-right: 15px; font-size: 1.2rem; width: 25px; }
         .nav-link-custom:hover, .nav-link-custom.active { 
-            background: rgba(255, 255, 255, 0.2); color: white; backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.2); color: white; backdrop-filter: blur(10px); 
         }
         
+        /* Overlay for Mobile */
+        .sidebar-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); display: none; z-index: 1500; backdrop-filter: blur(3px);
+        }
+        .sidebar-overlay.active { display: block; }
+
         /* Main Content */
         .main-content { margin-left: 280px; padding: 40px; transition: 0.3s; }
         
-        /* Cards & Components */
-        .filter-section { background: white; padding: 25px; border-radius: 30px; margin-bottom: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
-        .res-card { background: white; border-radius: 30px; padding: 20px; height: 100%; transition: 0.3s; border: 1px solid #f1f4f9; display: flex; flex-direction: column; }
-        .res-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.05); }
-        .img-wrapper { position: relative; border-radius: 20px; overflow: hidden; margin-bottom: 15px; height: 180px; }
-        .img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
-        
-        /* Mobile View */
+        /* Mobile Header */
+        .mobile-header { 
+            display: none; background: white; padding: 15px 20px; 
+            position: sticky; top: 0; z-index: 1100; border-bottom: 1px solid #eee;
+        }
+
+        /* Responsive Sidebar */
         @media (max-width: 992px) {
             .sidebar { left: -280px; }
             .sidebar.active { left: 0; }
             .main-content { margin-left: 0; padding: 20px; }
-            .mobile-header { display: flex !important; align-items: center; justify-content: space-between; background: white; padding: 15px 20px; position: sticky; top: 0; z-index: 1001; }
+            .mobile-header { display: flex !important; align-items: center; justify-content: space-between; }
         }
+
+        /* Custom UI Elements */
+        .filter-section { background: white; padding: 25px; border-radius: 30px; margin-bottom: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
+        .res-card { 
+            background: white; border-radius: 30px; padding: 20px; height: 100%; transition: 0.3s; 
+            border: 1px solid #f1f4f9; display: flex; flex-direction: column; 
+        }
+        .res-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.08); }
+        .img-wrapper { position: relative; border-radius: 20px; overflow: hidden; margin-bottom: 15px; height: 180px; }
+        .img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        .badge-match { position: absolute; top: 12px; left: 12px; background: var(--primary); color: white; padding: 5px 12px; border-radius: 10px; font-weight: 800; font-size: 0.75rem; }
     </style>
 </head>
 <body>
 
-    <div class="mobile-header d-none shadow-sm">
-        <button id="sidebarToggle" class="btn"><i class="fas fa-bars fs-4 text-primary"></i></button>
+    <div class="sidebar-overlay" id="overlay"></div>
+
+    <div class="mobile-header shadow-sm">
+        <button id="sidebarToggle" class="btn border-0"><i class="fas fa-bars fs-4 text-primary"></i></button>
         <h5 class="fw-800 m-0 text-primary">DishCovery.ai</h5>
         <img src="https://ui-avatars.com/api/?name={{ request.user.username }}&background=4318ff&color=fff" class="rounded-circle" width="35">
     </div>
@@ -68,29 +86,25 @@
             <a href="{% url 'user_profile' %}" class="nav-link-custom"><i class="fas fa-user-circle"></i> My Profile</a>
             <a href="{% url 'community_chat' %}" class="nav-link-custom"><i class="fas fa-comments"></i> Foodie Chat</a>
         </nav>
-        <div style="position: absolute; bottom: 40px; width: 80%;">
+        <div style="position: absolute; bottom: 30px; width: calc(100% - 60px);">
             <a href="{% url 'logout' %}" class="nav-link-custom" style="color: #ff7675;"><i class="fas fa-power-off"></i> Logout</a>
         </div>
     </div>
 
     <div class="main-content">
-        <div class="d-flex justify-content-between align-items-center mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
             <div>
                 <h2 class="fw-800 m-0">Hello, {{ request.user.username }}! 👋</h2>
-                <p class="text-muted small">Exploring food in <b>{{ selected_city|title }}</b></p>
+                <p class="text-muted small">Exploring in <b>{{ selected_city|title }}</b></p>
             </div>
-            <div class="d-flex gap-3">
-                <button class="btn btn-primary rounded-pill px-4 fw-bold" data-bs-toggle="modal" data-bs-target="#addModal">
-                    <i class="fas fa-plus me-1"></i> Add Spot
-                </button>
-            </div>
+            <button class="btn btn-primary rounded-pill px-4 py-2 fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#addModal">
+                <i class="fas fa-plus me-1"></i> Add Spot
+            </button>
         </div>
 
         <div class="filter-section">
             <form method="GET" class="row g-2">
-                <div class="col-md-5">
-                    <input type="text" id="search-input" name="q" class="form-control border-0 bg-light p-3 rounded-4" placeholder="Search dish or restaurant..." value="{{ request.GET.q }}">
-                </div>
+                <div class="col-md-5"><input type="text" name="q" class="form-control border-0 bg-light p-3 rounded-4" placeholder="Search dish or spot..." value="{{ request.GET.q }}"></div>
                 <div class="col-md-3">
                     <select name="city" class="form-select border-0 p-3 bg-light rounded-4" onchange="this.form.submit()">
                         {% for city in cities %}<option value="{{ city }}" {% if city|lower == selected_city|lower %}selected{% endif %}>{{ city|title }}</option>{% endfor %}
@@ -102,9 +116,7 @@
                         {% for c in cuisines %}<option value="{{ c }}">{{ c|title }}</option>{% endfor %}
                     </select>
                 </div>
-                <div class="col-md-1">
-                    <button type="submit" class="btn btn-primary w-100 p-3 rounded-4"><i class="fas fa-search"></i></button>
-                </div>
+                <div class="col-md-1"><button type="submit" class="btn btn-primary w-100 p-3 rounded-4"><i class="fas fa-search"></i></button></div>
             </form>
         </div>
 
@@ -112,22 +124,22 @@
         <div class="row g-4">
             {% for res in results %}
             <div class="col-12 col-md-6 col-xl-4">
-                <div class="res-card shadow-sm">
+                <div class="res-card">
                     <div class="img-wrapper">
                         <span class="badge-match">{{ res.match_score }}% Match</span>
                         <img src="https://loremflickr.com/400/300/food?lock={{ res.id }}">
                     </div>
-                    <h5 class="fw-800">{{ res.name }}</h5>
-                    <p class="text-muted small">{{ res.cuisine }}</p>
-                    <a href="{% url 'restaurant_detail' pk=res.id %}" class="btn btn-outline-primary w-100 rounded-pill mt-auto fw-bold">View Insights</a>
+                    <h5 class="fw-800 mb-1">{{ res.name }}</h5>
+                    <p class="text-muted small mb-3"><i class="fas fa-map-marker-alt me-1"></i> {{ res.locality }}</p>
+                    <a href="{% url 'restaurant_detail' pk=res.id %}" class="btn btn-outline-primary w-100 rounded-pill fw-bold mt-auto">View Insights</a>
                 </div>
             </div>
             {% endfor %}
         </div>
 
         {% if more_results %}
-        <div class="text-center mt-5">
-            <button class="btn btn-dark rounded-pill px-5 py-3 fw-bold shadow-lg" type="button" data-bs-toggle="collapse" data-bs-target="#exploreAll">
+        <div class="text-center mt-5 mb-5">
+            <button class="btn btn-dark rounded-pill px-5 py-3 fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#exploreAll">
                 EXPLORE ALL {{ more_results|length }} RECORDS
             </button>
             <div class="collapse mt-4 text-start" id="exploreAll">
@@ -136,7 +148,7 @@
                     <div class="col-md-4">
                         <div class="p-3 bg-white border rounded-4 d-flex justify-content-between align-items-center">
                             <h6 class="mb-0 small fw-bold">{{ res.name }}</h6>
-                            <a href="{% url 'restaurant_detail' pk=res.id %}" class="btn btn-sm btn-link text-primary text-decoration-none p-0">View</a>
+                            <a href="{% url 'restaurant_detail' pk=res.id %}" class="text-primary text-decoration-none small fw-bold">View</a>
                         </div>
                     </div>
                     {% endfor %}
@@ -148,88 +160,50 @@
 
     <div class="modal fade" id="addModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content p-4 rounded-5 border-0">
+            <div class="modal-content p-4 rounded-5 border-0 shadow-lg">
                 <form action="{% url 'add_restaurant' %}" method="POST">
                     {% csrf_token %}
                     <h4 class="fw-800 text-primary text-center mb-4">Add Intelligence</h4>
-                  <div class="row g-3">
-    <div class="col-md-6">
-        <label class="small fw-bold mb-1">Restaurant Name*</label>
-        <input type="text" name="name" class="form-control p-3 bg-light border-0 rounded-4" placeholder="e.g. Netram" required>
-    </div>
-    <div class="col-md-6">
-        <label class="small fw-bold mb-1">City (Location)*</label>
-        <input type="text" name="location" class="form-control p-3 bg-light border-0 rounded-4" placeholder="e.g. Prayagraj" required>
-    </div>
-    <div class="col-md-6">
-        <label class="small fw-bold mb-1">Locality (Area)*</label>
-        <input type="text" name="locality" class="form-control p-3 bg-light border-0 rounded-4" placeholder="e.g. Civil Lines" required>
-    </div>
-    <div class="col-md-6">
-        <label class="small fw-bold mb-1">Phone Number</label>
-        <input type="text" name="phone" class="form-control p-3 bg-light border-0 rounded-4" placeholder="Contact number">
-    </div>
-
-    <div class="col-md-6">
-        <label class="small fw-bold mb-1">Cuisines*</label>
-        <input type="text" name="cuisine" class="form-control p-3 bg-light border-0 rounded-4" placeholder="e.g. North Indian, Chinese" required>
-    </div>
-    <div class="col-md-6">
-        <label class="small fw-bold mb-1">Diet Type*</label>
-        <select name="diet_type" class="form-select p-3 bg-light border-0 rounded-4">
-            <option value="Pure Veg">Pure Veg</option>
-            <option value="Both">Both (Veg & Non-Veg)</option>
-            <option value="Non-Veg">Non-Veg Only</option>
-        </select>
-    </div>
-
-    <div class="col-12 mt-2">
-        <label class="small fw-bold d-block mb-3 text-primary"><i class="fas fa-tags me-1"></i> Select Vibes (Helps AI Discovery):</label>
-        <div class="d-flex flex-wrap gap-2">
-            <input type="checkbox" name="tags" value="budget" class="btn-check" id="v1">
-            <label class="btn btn-outline-primary btn-sm rounded-pill px-3" for="v1">💰 Budget Friendly</label>
-
-            <input type="checkbox" name="tags" value="date" class="btn-check" id="v2">
-            <label class="btn btn-outline-primary btn-sm rounded-pill px-3" for="v2">🕯️ Date Night</label>
-
-            <input type="checkbox" name="tags" value="work" class="btn-check" id="v3">
-            <label class="btn btn-outline-primary btn-sm rounded-pill px-3" for="v3">💻 Work/Study</label>
-
-            <input type="checkbox" name="tags" value="party" class="btn-check" id="v4">
-            <label class="btn btn-outline-primary btn-sm rounded-pill px-3" for="v4">🎉 Party Vibe</label>
-
-            <input type="checkbox" name="tags" value="family" class="btn-check" id="v5">
-            <label class="btn btn-outline-primary btn-sm rounded-pill px-3" for="v5">👨‍👩‍👧‍👦 Family Spot</label>
-
-            <input type="checkbox" name="tags" value="healthy" class="btn-check" id="v6">
-            <label class="btn btn-outline-primary btn-sm rounded-pill px-3" for="v6">🥗 Healthy Eating</label>
-
-            <input type="checkbox" name="tags" value="latenight" class="btn-check" id="v7">
-            <label class="btn btn-outline-primary btn-sm rounded-pill px-3" for="v7">🌙 Late Night</label>
-
-            <input type="checkbox" name="tags" value="fastfood" class="btn-check" id="v8">
-            <label class="btn btn-outline-primary btn-sm rounded-pill px-3" for="v8">🍔 Quick Bite</label>
-
-            <input type="checkbox" name="tags" value="rooftop" class="btn-check" id="v9">
-            <label class="btn btn-outline-primary btn-sm rounded-pill px-3" for="v9">🏙️ Rooftop</label>
-
-            <input type="checkbox" name="tags" value="music" class="btn-check" id="v10">
-            <label class="btn btn-outline-primary btn-sm rounded-pill px-3" for="v10">🎸 Live Music</label>
-
-            <input type="checkbox" name="tags" value="luxury" class="btn-check" id="v11">
-            <label class="btn btn-outline-primary btn-sm rounded-pill px-3" for="v11">💎 Luxury Dining</label>
-
-            <input type="checkbox" name="tags" value="street" class="btn-check" id="v12">
-            <label class="btn btn-outline-primary btn-sm rounded-pill px-3" for="v12">🍢 Street Style</label>
-        </div>
-    </div>
-</div>
-                    <button type="submit" class="btn btn-primary w-100 rounded-pill py-3 fw-bold mt-4 shadow-lg">CONTRIBUTE 🚀</button>
+                    <div class="row g-3">
+                        <div class="col-md-6"><label class="small fw-bold">Name*</label><input type="text" name="name" class="form-control p-3 bg-light border-0 rounded-4" required></div>
+                        <div class="col-md-6"><label class="small fw-bold">City*</label><input type="text" name="location" class="form-control p-3 bg-light border-0 rounded-4" required></div>
+                        <div class="col-md-6"><label class="small fw-bold">Locality*</label><input type="text" name="locality" class="form-control p-3 bg-light border-0 rounded-4" required></div>
+                        <div class="col-md-6"><label class="small fw-bold">Phone</label><input type="text" name="phone" class="form-control p-3 bg-light border-0 rounded-4"></div>
+                        <div class="col-md-12">
+                            <label class="small fw-bold d-block mb-2">Vibe Tags:</label>
+                            <div class="d-flex flex-wrap gap-2">
+                                <input type="checkbox" name="tags" value="budget" class="btn-check" id="v1"><label class="btn btn-outline-primary btn-sm rounded-pill" for="v1">Budget</label>
+                                <input type="checkbox" name="tags" value="date" class="btn-check" id="v2"><label class="btn btn-outline-primary btn-sm rounded-pill" for="v2">Date Night</label>
+                                <input type="checkbox" name="tags" value="work" class="btn-check" id="v3"><label class="btn btn-outline-primary btn-sm rounded-pill" for="v3">Work</label>
+                                <input type="checkbox" name="tags" value="party" class="btn-check" id="v4"><label class="btn btn-outline-primary btn-sm rounded-pill" for="v4">Party</label>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 rounded-pill py-3 fw-bold mt-4">CONTRIBUTE 🚀</button>
                 </form>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggle = document.getElementById('sidebarToggle');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+
+            if (toggle && sidebar && overlay) {
+                toggle.addEventListener('click', function() {
+                    sidebar.classList.add('active');
+                    overlay.classList.add('active');
+                });
+
+                overlay.addEventListener('click', function() {
+                    sidebar.classList.remove('active');
+                    overlay.classList.remove('active');
+                });
+            }
+        });
+    </script>
 </body>
 </html>
