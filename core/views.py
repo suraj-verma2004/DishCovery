@@ -9,6 +9,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
+from .models import Restaurant, Profile
+from django.db.models import Q
 
 from .models import Restaurant, Profile, Activity, Report  
 
@@ -216,22 +218,89 @@ def restaurant_detail(request, pk):
     res = get_object_or_404(Restaurant, pk=pk)
     return render(request, 'restaurant_detail.html', {'res': res})
 
-@login_required
 def discover_view(request):
-    user_profile, _ = Profile.objects.get_or_create(user=request.user)
-    user_city = user_profile.home_city or 'Prayagraj'
-    
-    # Random restaurants for discovery
-    res = Restaurant.objects.all().order_by('?')[:9] 
-    
-    return render(request, 'discover.html', {
-        'results': res, 
-        'city': user_city,  
-    })
-@login_required
-def compare_view(request):
-    return render(request, 'compare.html', {'all_res': Restaurant.objects.all()})
+    user_city = "Prayagraj"
+    if request.user.is_authenticated:
+        try:
+            profile = Profile.objects.get(user=request.user)
+        
+            user_city = profile.home_city or "Prayagraj"
+        except: pass
 
+    mood = request.GET.get('mood', '')
+    query = request.GET.get('q', '').strip()
+
+
+    results = Restaurant.objects.filter(
+        Q(location__icontains="Prayagraj") | 
+        Q(location__icontains="Allahabad")
+    )
+
+    
+    if mood:
+        if mood == 'date':
+            results = results.filter(rating__gte=4.0)
+        elif mood == 'budget':
+            results = results.filter(Q(cuisine__icontains='Fast Food') | Q(cuisine__icontains='Street Food'))
+        elif mood == 'family':
+            results = results.filter(cuisine__icontains='North Indian')
+        elif mood == 'fastfood':
+            results = results.filter(cuisine__icontains='Fast Food')
+        elif mood == 'healthy':
+            results = results.filter(cuisine__icontains='South Indian')
+        elif mood == 'party':
+            results = results.filter(rating__gte=4.2)
+
+   
+    if query:
+        results = results.filter(Q(name__icontains=query) | Q(cuisine__icontains=query))
+
+    
+    final_count = results.count()
+    print(f"--- DISCOVER FIXED ---")
+    print(f"City: {user_city} | Filtered Count: {final_count}")
+    
+
+
+    if final_count == 0:
+        results = Restaurant.objects.all()
+
+    
+    final_results = results.order_by('?')[:9]
+
+    return render(request, 'discover.html', {
+        'results': final_results,
+        'city': user_city,
+        'current_mood': mood
+    })
+def compare_view(request):
+    user_city = "Prayagraj"
+    if request.user.is_authenticated:
+        try:
+            profile, _ = Profile.objects.get_or_create(user=request.user)
+            user_city = profile.home_city or "Prayagraj"
+        except: pass
+
+
+    all_res = Restaurant.objects.filter(locality__icontains=user_city)
+    
+  
+    if not all_res.exists():
+        all_res = Restaurant.objects.all()[:50] 
+    # -----------------------
+
+    res1_name = request.GET.get('restaurant_name', '').strip()
+    res2_name = request.GET.get('res2_name', '').strip()
+
+    res1 = Restaurant.objects.filter(name__iexact=res1_name).first() if res1_name else None
+    res2 = Restaurant.objects.filter(name__iexact=res2_name).first() if res2_name else None
+
+    return render(request, 'compare.html', {
+        'all_res': all_res,
+        'res1': res1,
+        'res2': res2,
+        'user_city': user_city
+    })
 
 @login_required
 def report_restaurant(request, pk):

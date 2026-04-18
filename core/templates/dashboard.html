@@ -3,184 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DishCovery | Intelligence Dashboard</title>
+    <title>Dashboard | DishCovery.ai</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
         
-        :root { --primary: #4318ff; --dark: #111c44; --light: #f4f7fe; --accent: #05cd99; }
+        :root { --primary: #4318ff; --sidebar-bg: #110e5d; --light: #f4f7fe; }
         
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--light); color: #2b3674; margin: 0; overflow-x: hidden; }
-
-        /* --- SIDEBAR LOGIC --- */
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--light); color: #2b3674; margin: 0; }
+        
+        /* Sidebar Styling (Back to Bluish Premium) */
         .sidebar { 
-            height: 100vh; background: var(--dark); position: fixed; width: 260px; 
-            padding: 40px 20px; z-index: 1050; transition: 0.3s;
+            width: 280px; height: 100vh; 
+            background: linear-gradient(180deg, #120352 0%, #191687 100%); 
+            position: fixed; padding: 30px; z-index: 1000; transition: 0.3s;
+            color: white;
         }
-        .sidebar h3 { color: white; font-weight: 800; margin-bottom: 50px; text-align: center; }
-        .nav-link-custom { padding: 16px 20px; border-radius: 18px; color: #a3aed0; display: flex; align-items: center; text-decoration: none; margin-bottom: 12px; font-weight: 600; }
-        .nav-link-custom:hover, .nav-link-custom.active { background: var(--primary); color: white; box-shadow: 0 10px 20px rgba(67, 24, 255, 0.2); }
-        .nav-link-custom i { margin-right: 15px; width: 20px; text-align: center; }
-
-        /* --- MAIN CONTENT --- */
-        .main-content { margin-left: 260px; padding: 40px; transition: 0.3s; }
-        
-        .mobile-header { display: none; background: white; padding: 15px 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 1000; }
-
-        @media (max-width: 992px) {
-            .sidebar { left: -260px; }
-            .sidebar.active { left: 0; }
-            .main-content { margin-left: 0; padding: 20px; }
-            .mobile-header { display: flex; justify-content: space-between; align-items: center; }
-            .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1040; }
-            .sidebar-overlay.active { display: block; }
+        .sidebar h3 { font-weight: 800; color: white; margin-bottom: 40px; }
+        .nav-link-custom { 
+            display: flex; align-items: center; padding: 15px 20px; border-radius: 15px; 
+            text-decoration: none; color: rgba(255,255,255,0.7); font-weight: 600; 
+            margin-bottom: 10px; transition: 0.3s; 
         }
-
-        /* --- RESTAURANT CARDS --- */
-        .res-card { background: white; border-radius: 30px; padding: 18px; border: 1px solid #e0e5f2; height: 100%; transition: 0.4s; position: relative; display: flex; flex-direction: column; }
-        .res-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.06); border-color: var(--primary); }
+        .nav-link-custom i { margin-right: 15px; font-size: 1.2rem; }
+        .nav-link-custom:hover, .nav-link-custom.active { 
+            background: rgba(255, 255, 255, 0.2); color: white; backdrop-filter: blur(10px);
+        }
         
-        .img-wrapper { height: 170px; border-radius: 22px; overflow: hidden; margin-bottom: 15px; position: relative; }
+        /* Main Content */
+        .main-content { margin-left: 280px; padding: 40px; transition: 0.3s; }
+        
+        /* Cards & Components */
+        .filter-section { background: white; padding: 25px; border-radius: 30px; margin-bottom: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
+        .res-card { background: white; border-radius: 30px; padding: 20px; height: 100%; transition: 0.3s; border: 1px solid #f1f4f9; display: flex; flex-direction: column; }
+        .res-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.05); }
+        .img-wrapper { position: relative; border-radius: 20px; overflow: hidden; margin-bottom: 15px; height: 180px; }
         .img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
         
-        .badge-match { position: absolute; top: 12px; right: 12px; background: var(--accent); color: white; padding: 5px 12px; border-radius: 12px; font-weight: 800; font-size: 0.7rem; z-index: 5; }
-
-        .diet-badge { padding: 4px 10px; border-radius: 8px; font-size: 0.65rem; font-weight: 800; border: 1.5px solid; margin-bottom: 8px; display: inline-flex; align-items: center; }
-        .diet-badge.veg { color: #2e7d32; border-color: #2e7d32; background: #e8f5e9; }
-        .diet-badge.nonveg { color: #c62828; border-color: #c62828; background: #ffebee; }
-        .diet-badge.both { color: #f59e0b; border-color: #f59e0b; background: #fef3c7; }
-        .diet-dot { width: 6px; height: 6px; border-radius: 50%; margin-right: 6px; }
-
-        .filter-section { background: white; border-radius: 25px; padding: 15px 25px; border: 1px solid #e0e5f2; margin-bottom: 40px; }
-
-        .vibe-tag { display: none; }
-        .vibe-label { padding: 8px 15px; border-radius: 20px; border: 2px solid #e0e5f2; cursor: pointer; font-size: 0.75rem; font-weight: 700; margin: 3px; display: inline-block; }
-        .vibe-tag:checked + .vibe-label { background: var(--primary); color: white; border-color: var(--primary); }
-
-        /* Suggestions Style */
-        #suggestion-box { z-index: 1000; border-radius: 15px; overflow: hidden; border: none; }
-        .suggestion-item { padding: 12px 20px; cursor: pointer; font-weight: 600; font-size: 0.9rem; }
-        .suggestion-item:hover { background-color: var(--light); color: var(--primary); }
-
-
-        .fw-500 { font-weight: 500; }
-    .animate-pulse { animation: pulse 2s infinite; }
-    @keyframes pulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.05); }
-        100% { transform: scale(1); }
-    }
-    .hover-scale:hover { transform: scale(1.05); transition: 0.3s ease; }
-    
-    @media (max-width: 768px) {
-        .display-6 { font-size: 1.8rem !important; }
-        .p-md-5 { padding: 30px !important; }
-    }
+        /* Mobile View */
+        @media (max-width: 992px) {
+            .sidebar { left: -280px; }
+            .sidebar.active { left: 0; }
+            .main-content { margin-left: 0; padding: 20px; }
+            .mobile-header { display: flex !important; align-items: center; justify-content: space-between; background: white; padding: 15px 20px; position: sticky; top: 0; z-index: 1001; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="mobile-header">
-        <button id="sidebarToggle" class="btn"><i class="fas fa-bars fs-4"></i></button>
-        <h5 class="fw-800 m-0">DishCovery.ai</h5>
+    <div class="mobile-header d-none shadow-sm">
+        <button id="sidebarToggle" class="btn"><i class="fas fa-bars fs-4 text-primary"></i></button>
+        <h5 class="fw-800 m-0 text-primary">DishCovery.ai</h5>
         <img src="https://ui-avatars.com/api/?name={{ request.user.username }}&background=4318ff&color=fff" class="rounded-circle" width="35">
     </div>
-
-    <div class="sidebar-overlay" id="overlay"></div>
 
     <div class="sidebar" id="sidebar">
         <h3>DishCovery.ai</h3>
         <nav>
             <a href="{% url 'dashboard' %}" class="nav-link-custom active"><i class="fas fa-th-large"></i> Dashboard</a>
             <a href="{% url 'discover' %}" class="nav-link-custom"><i class="fas fa-magic"></i> AI Discover</a>
-            <a href="{% url 'compare_mode' %}" class="nav-link-custom"><i class="fas fa-bolt"></i> Versus Mode</a>
+            <a href="https://ingridient-oracle.onrender.com/" target="_blank" class="nav-link-custom"><i class="fas fa-utensils"></i> Recipe Finder</a>
+            <a href="{% url 'compare' %}" class="nav-link-custom"><i class="fas fa-bolt"></i> Versus Mode</a>
             <a href="{% url 'user_profile' %}" class="nav-link-custom"><i class="fas fa-user-circle"></i> My Profile</a>
-            <a href="{% url 'community_chat' %}" class="nav-link-custom {% if request.resolver_match.url_name == 'community_chat' %}active{% endif %}">
-    <i class="fas fa-comments"></i> Foodie Chat
-</a>
+            <a href="{% url 'community_chat' %}" class="nav-link-custom"><i class="fas fa-comments"></i> Foodie Chat</a>
         </nav>
-        <div style="margin-top: 120px;">
-            <a href="{% url 'logout' %}" class="nav-link-custom text-danger"><i class="fas fa-power-off"></i> Logout</a>
+        <div style="position: absolute; bottom: 40px; width: 80%;">
+            <a href="{% url 'logout' %}" class="nav-link-custom" style="color: #ff7675;"><i class="fas fa-power-off"></i> Logout</a>
         </div>
     </div>
 
     <div class="main-content">
-        <div class="d-none d-lg-flex justify-content-between align-items-center mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-5">
             <div>
                 <h2 class="fw-800 m-0">Hello, {{ request.user.username }}! 👋</h2>
-                <p class="text-muted small">AI Analyzing Intelligence in <b>{{ selected_city|title }}</b></p>
+                <p class="text-muted small">Exploring food in <b>{{ selected_city|title }}</b></p>
             </div>
-            <img src="https://ui-avatars.com/api/?name={{ request.user.username }}&background=4318ff&color=fff" class="rounded-circle shadow-sm" width="50">
+            <div class="d-flex gap-3">
+                <button class="btn btn-primary rounded-pill px-4 fw-bold" data-bs-toggle="modal" data-bs-target="#addModal">
+                    <i class="fas fa-plus me-1"></i> Add Spot
+                </button>
+            </div>
         </div>
 
-        <div class="filter-section shadow-sm">
-            <form method="GET" class="row g-2 align-items-center position-relative">
-                <div class="col-lg-5 col-12">
-                    <div class="position-relative">
-                        <input type="text" id="search-input" name="q" autocomplete="off" class="form-control border-0 bg-light p-3 rounded-4" placeholder="Search by name..." value="{{ request.GET.q }}">
-                        <div id="suggestion-box" class="list-group position-absolute w-100 shadow-lg mt-1" style="display: none;"></div>
-                    </div>
+        <div class="filter-section">
+            <form method="GET" class="row g-2">
+                <div class="col-md-5">
+                    <input type="text" id="search-input" name="q" class="form-control border-0 bg-light p-3 rounded-4" placeholder="Search dish or restaurant..." value="{{ request.GET.q }}">
                 </div>
-                <div class="col-lg-3 col-6">
-                    <select name="city" class="form-select border-0 fw-bold text-primary p-3 bg-light rounded-4" onchange="this.form.submit()">
+                <div class="col-md-3">
+                    <select name="city" class="form-select border-0 p-3 bg-light rounded-4" onchange="this.form.submit()">
                         {% for city in cities %}<option value="{{ city }}" {% if city|lower == selected_city|lower %}selected{% endif %}>{{ city|title }}</option>{% endfor %}
                     </select>
                 </div>
-                <div class="col-lg-3 col-6">
-                    <select name="cuisine" class="form-select border-0 fw-bold p-3 bg-light rounded-4" onchange="this.form.submit()">
+                <div class="col-md-3">
+                    <select name="cuisine" class="form-select border-0 p-3 bg-light rounded-4" onchange="this.form.submit()">
                         <option value="">All Cuisines</option>
                         {% for c in cuisines %}<option value="{{ c }}">{{ c|title }}</option>{% endfor %}
                     </select>
                 </div>
-                <div class="col-lg-1 col-12">
-                    <button type="submit" class="btn btn-primary w-100 p-3 fw-bold rounded-4">GO</button>
+                <div class="col-md-1">
+                    <button type="submit" class="btn btn-primary w-100 p-3 rounded-4"><i class="fas fa-search"></i></button>
                 </div>
             </form>
         </div>
 
-        <h4 class="fw-800 mb-4">Top Matches for You</h4>
-        <div class="row g-4 mb-5">
+        <h4 class="fw-800 mb-4">Top Matches</h4>
+        <div class="row g-4">
             {% for res in results %}
             <div class="col-12 col-md-6 col-xl-4">
                 <div class="res-card shadow-sm">
                     <div class="img-wrapper">
                         <span class="badge-match">{{ res.match_score }}% Match</span>
-                        <img src="https://loremflickr.com/400/300/food,dish/all?lock={{ res.id }}">
+                        <img src="https://loremflickr.com/400/300/food?lock={{ res.id }}">
                     </div>
-                    <div>
-                        {% with c=res.cuisine|lower %}
-                        {% if 'pure veg' in c %}<div class="diet-badge veg"><span class="diet-dot"></span>Veg</div>
-                        {% elif 'both' in c or 'veg and non' in c %}<div class="diet-badge both"><span class="diet-dot"></span>Both</div>
-                        {% elif 'non-veg' in c %}<div class="diet-badge nonveg"><span class="diet-dot"></span>Non-Veg</div>
-                        {% endif %}
-                        {% endwith %}
-                    </div>
-                    <h5 class="fw-800 mb-1">{{ res.name }}</h5>
-                    <p class="text-muted small mb-3"><i class="fas fa-utensils me-1"></i> {{ res.cuisine|truncatechars:35 }}</p>
-                    <a href="{% url 'restaurant_detail' pk=res.id %}" class="btn btn-primary w-100 rounded-pill py-2 fw-bold mt-auto">View Insights</a>
+                    <h5 class="fw-800">{{ res.name }}</h5>
+                    <p class="text-muted small">{{ res.cuisine }}</p>
+                    <a href="{% url 'restaurant_detail' pk=res.id %}" class="btn btn-outline-primary w-100 rounded-pill mt-auto fw-bold">View Insights</a>
                 </div>
-            </div>
-            {% empty %}
-            <div class="col-12 text-center py-5">
-                <p class="text-muted">No restaurants found in this city. Try contributing data!</p>
             </div>
             {% endfor %}
         </div>
 
         {% if more_results %}
-        <div class="text-center py-5 bg-white rounded-5 shadow-sm mt-5 mb-5">
-            <h5 class="fw-800 mb-3">Want to explore all {{ more_results|length }}+ records?</h5>
-            <button class="btn btn-dark rounded-pill px-5 py-3 fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#exploreAll">
-                EXPLORE ALL
+        <div class="text-center mt-5">
+            <button class="btn btn-dark rounded-pill px-5 py-3 fw-bold shadow-lg" type="button" data-bs-toggle="collapse" data-bs-target="#exploreAll">
+                EXPLORE ALL {{ more_results|length }} RECORDS
             </button>
-            <div class="collapse mt-5 text-start container" id="exploreAll">
+            <div class="collapse mt-4 text-start" id="exploreAll">
                 <div class="row g-3">
                     {% for res in more_results %}
-                    <div class="col-12 col-md-4">
-                        <div class="p-3 bg-light border rounded-4 d-flex justify-content-between align-items-center">
-                            <h6 class="fw-bold mb-0 small">{{ res.name }}</h6>
-                            <a href="{% url 'restaurant_detail' pk=res.id %}" class="btn btn-sm btn-outline-primary rounded-pill px-3">Details</a>
+                    <div class="col-md-4">
+                        <div class="p-3 bg-white border rounded-4 d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0 small fw-bold">{{ res.name }}</h6>
+                            <a href="{% url 'restaurant_detail' pk=res.id %}" class="btn btn-sm btn-link text-primary text-decoration-none p-0">View</a>
                         </div>
                     </div>
                     {% endfor %}
@@ -188,134 +144,92 @@
             </div>
         </div>
         {% endif %}
-
-        <div class="container mt-5 mb-5 px-0 px-lg-3">
-    <div class="card border-0 shadow-lg overflow-hidden position-relative" 
-         style="border-radius: 40px; background: linear-gradient(135deg, #4318ff 0%, #707eff 100%);">
-        
-        <div class="position-absolute" style="top: -20px; right: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
-        
-        <div class="row g-0 align-items-center">
-            <div class="col-lg-8 col-12 p-4 p-md-5 text-white position-relative" style="z-index: 2;">
-                <span class="badge bg-white text-primary rounded-pill px-3 py-2 mb-3 fw-800 animate-pulse">
-                    <i class="fas fa-hat-chef me-1"></i> NEW: DIY COOKING
-                </span>
-                <h2 class="display-6 fw-800 mb-3" style="letter-spacing: -1px;">Don't want to go out? <br class="d-none d-md-block"> Cook like a Pro at Home!</h2>
-                <p class="opacity-75 mb-4 fs-6 fw-500 pe-lg-5">
-                   No plan outside? 
-No problem!  
-With your own spices,  
-With your own ingredients,  
-Bring that restaurant taste,  
-Right at home.  
-Use our smart recipe finder.  
-                </p>
-                
-                <a href="https://ingridient-oracle.onrender.com/" target="_blank" class="btn btn-light btn-lg rounded-pill px-4 px-md-5 py-3 fw-bold text-primary shadow-sm hover-scale">
-                    <i class="fas fa-utensils me-2"></i> SEARCH RECIPES NOW
-                </a>
-            </div>
-            
-            <div class="col-lg-4 d-none d-lg-flex justify-content-center align-items-center position-relative">
-                <i class="fas fa-mortar-pestle text-white opacity-25" style="font-size: 160px; transform: rotate(-15deg);"></i>
-                <i class="fas fa-pepper-hot position-absolute text-white opacity-10" style="top: 20%; right: 20%; font-size: 40px;"></i>
-            </div>
-        </div>
-    </div>
-</div>
-        <div class="text-center mt-4">
-            <button class="btn btn-primary rounded-pill px-5 py-3 fw-bold shadow-lg" data-bs-toggle="modal" data-bs-target="#addModal">
-                <i class="fas fa-plus-circle me-2"></i> Contribute Full Data
-            </button>
-        </div>
     </div>
 
     <div class="modal fade" id="addModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content p-4 rounded-5 border-0 shadow-lg">
+            <div class="modal-content p-4 rounded-5 border-0">
                 <form action="{% url 'add_restaurant' %}" method="POST">
                     {% csrf_token %}
-                    <h4 class="fw-800 text-primary text-center mb-4">Add Restaurant Intelligence</h4>
-                    <div class="row g-3">
-                        <div class="col-md-6"><label class="small fw-bold">Name*</label><input type="text" name="name" class="form-control p-3 bg-light border-0 rounded-4" required></div>
-                        <div class="col-md-6"><label class="small fw-bold">City*</label><input type="text" name="location" class="form-control p-3 bg-light border-0 rounded-4" required></div>
-                        <div class="col-md-12">
-                            <label class="small fw-bold">Type*</label>
-                            <select name="diet_type" class="form-select p-3 bg-light border-0 rounded-4" required>
-                                <option value="" selected disabled>Choose Category...</option>
-                                <option value="Pure Veg">Pure Veg Only</option>
-                                <option value="Veg and Non-Veg Both">Both (Veg & Non-Veg)</option>
-                                <option value="Non-Veg Only">Non-Veg Only</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6"><label class="small fw-bold">Locality</label><input type="text" name="locality" class="form-control p-3 bg-light border-0 rounded-4"></div>
-                        <div class="col-md-6"><label class="small fw-bold">Phone</label><input type="text" name="phone" class="form-control p-3 bg-light border-0 rounded-4"></div>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100 rounded-pill py-3 fw-bold mt-4 shadow-lg">UPLOAD TO ENGINE 🚀</button>
+                    <h4 class="fw-800 text-primary text-center mb-4">Add Intelligence</h4>
+                  <div class="row g-3">
+    <div class="col-md-6">
+        <label class="small fw-bold mb-1">Restaurant Name*</label>
+        <input type="text" name="name" class="form-control p-3 bg-light border-0 rounded-4" placeholder="e.g. Netram" required>
+    </div>
+    <div class="col-md-6">
+        <label class="small fw-bold mb-1">City (Location)*</label>
+        <input type="text" name="location" class="form-control p-3 bg-light border-0 rounded-4" placeholder="e.g. Prayagraj" required>
+    </div>
+    <div class="col-md-6">
+        <label class="small fw-bold mb-1">Locality (Area)*</label>
+        <input type="text" name="locality" class="form-control p-3 bg-light border-0 rounded-4" placeholder="e.g. Civil Lines" required>
+    </div>
+    <div class="col-md-6">
+        <label class="small fw-bold mb-1">Phone Number</label>
+        <input type="text" name="phone" class="form-control p-3 bg-light border-0 rounded-4" placeholder="Contact number">
+    </div>
+
+    <div class="col-md-6">
+        <label class="small fw-bold mb-1">Cuisines*</label>
+        <input type="text" name="cuisine" class="form-control p-3 bg-light border-0 rounded-4" placeholder="e.g. North Indian, Chinese" required>
+    </div>
+    <div class="col-md-6">
+        <label class="small fw-bold mb-1">Diet Type*</label>
+        <select name="diet_type" class="form-select p-3 bg-light border-0 rounded-4">
+            <option value="Pure Veg">Pure Veg</option>
+            <option value="Both">Both (Veg & Non-Veg)</option>
+            <option value="Non-Veg">Non-Veg Only</option>
+        </select>
+    </div>
+
+    <div class="col-12 mt-2">
+        <label class="small fw-bold d-block mb-3 text-primary"><i class="fas fa-tags me-1"></i> Select Vibes (Helps AI Discovery):</label>
+        <div class="d-flex flex-wrap gap-2">
+            <input type="checkbox" name="tags" value="budget" class="btn-check" id="v1">
+            <label class="btn btn-outline-primary btn-sm rounded-pill px-3" for="v1">💰 Budget Friendly</label>
+
+            <input type="checkbox" name="tags" value="date" class="btn-check" id="v2">
+            <label class="btn btn-outline-primary btn-sm rounded-pill px-3" for="v2">🕯️ Date Night</label>
+
+            <input type="checkbox" name="tags" value="work" class="btn-check" id="v3">
+            <label class="btn btn-outline-primary btn-sm rounded-pill px-3" for="v3">💻 Work/Study</label>
+
+            <input type="checkbox" name="tags" value="party" class="btn-check" id="v4">
+            <label class="btn btn-outline-primary btn-sm rounded-pill px-3" for="v4">🎉 Party Vibe</label>
+
+            <input type="checkbox" name="tags" value="family" class="btn-check" id="v5">
+            <label class="btn btn-outline-primary btn-sm rounded-pill px-3" for="v5">👨‍👩‍👧‍👦 Family Spot</label>
+
+            <input type="checkbox" name="tags" value="healthy" class="btn-check" id="v6">
+            <label class="btn btn-outline-primary btn-sm rounded-pill px-3" for="v6">🥗 Healthy Eating</label>
+
+            <input type="checkbox" name="tags" value="latenight" class="btn-check" id="v7">
+            <label class="btn btn-outline-primary btn-sm rounded-pill px-3" for="v7">🌙 Late Night</label>
+
+            <input type="checkbox" name="tags" value="fastfood" class="btn-check" id="v8">
+            <label class="btn btn-outline-primary btn-sm rounded-pill px-3" for="v8">🍔 Quick Bite</label>
+
+            <input type="checkbox" name="tags" value="rooftop" class="btn-check" id="v9">
+            <label class="btn btn-outline-primary btn-sm rounded-pill px-3" for="v9">🏙️ Rooftop</label>
+
+            <input type="checkbox" name="tags" value="music" class="btn-check" id="v10">
+            <label class="btn btn-outline-primary btn-sm rounded-pill px-3" for="v10">🎸 Live Music</label>
+
+            <input type="checkbox" name="tags" value="luxury" class="btn-check" id="v11">
+            <label class="btn btn-outline-primary btn-sm rounded-pill px-3" for="v11">💎 Luxury Dining</label>
+
+            <input type="checkbox" name="tags" value="street" class="btn-check" id="v12">
+            <label class="btn btn-outline-primary btn-sm rounded-pill px-3" for="v12">🍢 Street Style</label>
+        </div>
+    </div>
+</div>
+                    <button type="submit" class="btn btn-primary w-100 rounded-pill py-3 fw-bold mt-4 shadow-lg">CONTRIBUTE 🚀</button>
                 </form>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Sidebar Logic
-        const toggle = document.getElementById('sidebarToggle');
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('overlay');
-
-        if(toggle) {
-            toggle.onclick = () => {
-                sidebar.classList.toggle('active');
-                overlay.classList.toggle('active');
-            };
-        }
-
-        overlay.onclick = () => {
-            sidebar.classList.remove('active');
-            overlay.classList.remove('active');
-        };
-
-        // AUTOCOMPLETE SUGGESTIONS LOGIC
-        const searchInput = document.getElementById('search-input');
-        const suggestionBox = document.getElementById('suggestion-box');
-
-        searchInput.addEventListener('input', function() {
-            const term = this.value.trim();
-            if (term.length < 2) {
-                suggestionBox.style.display = 'none';
-                return;
-            }
-
-            fetch(`/search-suggestions/?term=${term}`)
-                .then(response => response.json())
-                .then(data => {
-                    suggestionBox.innerHTML = '';
-                    if (data.length > 0) {
-                        data.forEach(item => {
-                            const div = document.createElement('div');
-                            div.innerHTML = `<i class="fas fa-search me-2 text-muted"></i> ${item}`;
-                            div.className = 'list-group-item suggestion-item';
-                            div.onclick = function() {
-                                searchInput.value = item;
-                                suggestionBox.style.display = 'none';
-                                searchInput.closest('form').submit(); // ऑटो सबमिट
-                            };
-                            suggestionBox.appendChild(div);
-                        });
-                        suggestionBox.style.display = 'block';
-                    } else {
-                        suggestionBox.style.display = 'none';
-                    }
-                });
-        });
-
-        // बाहर क्लिक करने पर बॉक्स बंद हो जाए
-        document.addEventListener('click', function(e) {
-            if (e.target !== searchInput && e.target !== suggestionBox) {
-                suggestionBox.style.display = 'none';
-            }
-        });
-    </script>
 </body>
 </html>

@@ -126,14 +126,30 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')] 
 
 
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [os.environ.get('REDIS_URL', 'redis://127.0.0.1:6379')],
+# settings.py
+
+import os
+
+# होस्टिंग सर्वर (जैसे Render) हमें 'REDIS_URL' देता है
+REDIS_URL = os.environ.get('REDIS_URL')
+
+if REDIS_URL:
+    # अगर REDIS_URL मौजूद है (मतलब हम सर्वर पर हैं)
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": [REDIS_URL],
+            },
         },
-    },
-}
+    }
+else:
+    # अगर REDIS_URL नहीं है (मतलब हम लोकल पर हैं)
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels.layers.InMemoryChannelLayer",
+        },
+    }
 
 # Render to be trusted
 CSRF_TRUSTED_ORIGINS = [

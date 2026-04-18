@@ -7,216 +7,152 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
         
         :root { --primary: #4318ff; --dark: #1b254b; --light: #f4f7fe; --accent: #05cd99; }
-        
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--light); color: #2b3674; margin: 0; }
         
-        /* Glass Navbar */
-        .glass-nav {
-            background: rgba(255, 255, 255, 0.8) !important;
-            backdrop-filter: blur(15px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        /* Hero Styling */
+        /* Premium Hero */
         .discover-hero {
             background: linear-gradient(135deg, #4318ff 0%, #110ad2 100%);
-            padding: 80px 0 120px;
-            color: white;
-            border-radius: 0 0 60px 60px;
+            padding: 50px 0 100px; color: white; border-radius: 0 0 60px 60px;
             margin-bottom: -60px;
         }
 
+        .search-box {
+            max-width: 600px; margin: 0 auto;
+            background: white; border-radius: 50px; padding: 6px;
+            display: flex; box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+        .search-box input { border: none; padding: 12px 25px; border-radius: 50px; flex: 1; font-weight: 600; }
+        .search-box input:focus { outline: none; }
+        .search-box .btn-search { background: var(--primary); color: white; border-radius: 50px; padding: 10px 30px; border: none; font-weight: 800; }
+
         /* Mood Grid */
         .mood-card { 
-            background: white; border-radius: 28px; padding: 25px; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            background: white; border-radius: 28px; padding: 22px; 
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
             border: 2px solid transparent; text-align: center; height: 100%;
             display: block; text-decoration: none; color: inherit;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.03);
         }
         .mood-card:hover, .mood-card.active { 
-            border-color: var(--primary); background: #ffffff; transform: translateY(-12px); 
-            box-shadow: 0 25px 50px rgba(67, 24, 255, 0.15);
+            border-color: var(--primary); transform: translateY(-10px); 
+            box-shadow: 0 20px 40px rgba(67, 24, 255, 0.15);
         }
-        .mood-card.active { background: #eef2ff; }
-        .mood-emoji { font-size: 3rem; display: block; margin-bottom: 12px; transition: 0.3s; }
-        .mood-card:hover .mood-emoji { transform: scale(1.2) rotate(5deg); }
+        .mood-card.active { background: #f0f3ff; }
+        .mood-emoji { font-size: 2.8rem; display: block; margin-bottom: 10px; }
 
-        /* Sentiment Tags */
-        .sentiment-tag { 
-            font-size: 0.75rem; font-weight: 800; padding: 6px 14px; border-radius: 12px; 
-            background: #f0f3ff; color: var(--primary); border: 1px solid #d0d7ff;
-        }
-
-        .surprise-btn {
-            background: #ffffff; color: var(--primary); 
-            border: none; padding: 18px 40px; border-radius: 25px;
-            font-weight: 800; transition: 0.3s; box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-        }
-        .surprise-btn:hover { background: var(--accent); color: white; transform: scale(1.05); }
-
-        /* Restaurant Result Cards */
+        /* Results Card */
         .res-result-card {
-            background: white; border-radius: 35px; padding: 30px; border: 1px solid #eef2ff;
-            transition: 0.3s; height: 100%;
+            background: white; border-radius: 35px; padding: 30px; border: 1px solid #f0f2f9;
+            transition: 0.3s; height: 100%; display: flex; flex-direction: column;
         }
-        .res-result-card:hover { border-color: var(--primary); box-shadow: 0 20px 40px rgba(0,0,0,0.05); }
+        .res-result-card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: 0 20px 40px rgba(0,0,0,0.05); }
+
+        .btn-analyze {
+            background: var(--primary); color: white; border-radius: 18px;
+            font-weight: 800; padding: 15px; text-decoration: none; display: block; text-align: center;
+            margin-top: auto;
+        }
 
         @media (max-width: 768px) {
-            .discover-hero { padding: 60px 0 100px; border-radius: 0 0 40px 40px; }
-            .mood-emoji { font-size: 2.2rem; }
+            .discover-hero { padding: 40px 15px 80px; }
             .mood-card { padding: 15px; }
+            .mood-emoji { font-size: 2rem; }
+            .search-box { margin: 0 10px; }
+            .search-box .btn-search { padding: 10px 20px; font-size: 0.9rem; }
         }
     </style>
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-lg glass-nav p-3 sticky-top">
-        <div class="container">
-            <a class="navbar-brand fw-800 text-primary d-flex align-items-center" href="{% url 'dashboard' %}">
-                <i class="fas fa-arrow-left me-3"></i> Intelligence Portal
-            </a>
-            <div class="ms-auto">
-                <span class="badge bg-primary rounded-pill px-3 py-2">
-                    <i class="fas fa-location-dot me-2"></i> {{ city|title }}
-                </span>
-            </div>
-        </div>
-    </nav>
-
     <div class="discover-hero text-center">
         <div class="container">
-            <h1 class="display-4 fw-800 mb-3">What's the Mood, {{ request.user.username }}?</h1>
-            <p class="opacity-75 fs-5 mb-5">AI is ready to filter 500+ restaurants based on your vibe.</p>
-            <a href="?surprise=True" class="surprise-btn text-decoration-none">
-                <i class="fas fa-dice me-2"></i> SURPRISE MY TASTE BUDS
-            </a>
+            <h1 class="display-5 fw-800 mb-4">What's the Vibe, {{ request.user.username }}?</h1>
+            
+            <form method="GET" action="{% url 'discover' %}" class="search-box">
+                <input type="text" name="q" placeholder="Search pizza, burger, or name..." value="{{ request.GET.q }}">
+                <button type="submit" class="btn-search">SEARCH</button>
+            </form>
         </div>
     </div>
 
     <div class="container" style="position: relative; z-index: 10;">
         <div class="row g-3 g-md-4 mb-5">
-            <div class="col-6 col-md-4 col-lg-3">
-                <a href="?mood=date" class="mood-card {% if current_mood == 'date' %}active{% endif %}">
-                    <span class="mood-emoji">🕯️</span>
-                    <h6 class="fw-800 mb-1">Date Night</h6>
-                    <p class="x-small text-muted mb-0 d-none d-md-block">Romantic & Quiet</p>
+            <div class="col-6 col-md-3">
+                <a href="?mood=date" class="mood-card {% if request.GET.mood == 'date' %}active{% endif %}">
+                    <span class="mood-emoji">🕯️</span><h6 class="fw-800 mb-0">Date Night</h6>
                 </a>
             </div>
-            <div class="col-6 col-md-4 col-lg-3">
-                <a href="?mood=budget" class="mood-card {% if current_mood == 'budget' %}active{% endif %}">
-                    <span class="mood-emoji">💰</span>
-                    <h6 class="fw-800 mb-1">Budget Friendly</h6>
-                    <p class="x-small text-muted mb-0 d-none d-md-block">Value for Money</p>
+            <div class="col-6 col-md-3">
+                <a href="?mood=budget" class="mood-card {% if request.GET.mood == 'budget' %}active{% endif %}">
+                    <span class="mood-emoji">💰</span><h6 class="fw-800 mb-0">Budget</h6>
                 </a>
             </div>
-            <div class="col-6 col-md-4 col-lg-3">
-                <a href="?mood=family" class="mood-card {% if current_mood == 'family' %}active{% endif %}">
-                    <span class="mood-emoji">👨‍👩‍👧‍👦</span>
-                    <h6 class="fw-800 mb-1">Family Time</h6>
-                    <p class="x-small text-muted mb-0 d-none d-md-block">Spacious & Calm</p>
+            <div class="col-6 col-md-3">
+                <a href="?mood=family" class="mood-card {% if request.GET.mood == 'family' %}active{% endif %}">
+                    <span class="mood-emoji">👨‍👩‍👧‍👦</span><h6 class="fw-800 mb-0">Family</h6>
                 </a>
             </div>
-            <div class="col-6 col-md-4 col-lg-3">
-                <a href="?mood=fastfood" class="mood-card {% if current_mood == 'fastfood' %}active{% endif %}">
-                    <span class="mood-emoji">🍔</span>
-                    <h6 class="fw-800 mb-1">Quick Bite</h6>
-                    <p class="x-small text-muted mb-0 d-none d-md-block">Fast & Delicious</p>
+            <div class="col-6 col-md-3">
+                <a href="?mood=fastfood" class="mood-card {% if request.GET.mood == 'fastfood' %}active{% endif %}">
+                    <span class="mood-emoji">🍔</span><h6 class="fw-800 mb-0">Quick Bite</h6>
                 </a>
             </div>
-            <div class="col-6 col-md-4 col-lg-3">
-                <a href="?mood=work" class="mood-card {% if current_mood == 'work' %}active{% endif %}">
-                    <span class="mood-emoji">💻</span>
-                    <h6 class="fw-800 mb-1">Work/Study</h6>
-                    <p class="x-small text-muted mb-0 d-none d-md-block">Quiet with Wi-Fi</p>
+            <div class="col-6 col-md-3">
+                <a href="?mood=work" class="mood-card {% if request.GET.mood == 'work' %}active{% endif %}">
+                    <span class="mood-emoji">💻</span><h6 class="fw-800 mb-0">Work/Study</h6>
                 </a>
             </div>
-            <div class="col-6 col-md-4 col-lg-3">
-                <a href="?mood=healthy" class="mood-card {% if current_mood == 'healthy' %}active{% endif %}">
-                    <span class="mood-emoji">🥗</span>
-                    <h6 class="fw-800 mb-1">Clean Eating</h6>
-                    <p class="x-small text-muted mb-0 d-none d-md-block">Fresh & Organic</p>
+            <div class="col-6 col-md-3">
+                <a href="?mood=healthy" class="mood-card {% if request.GET.mood == 'healthy' %}active{% endif %}">
+                    <span class="mood-emoji">🥗</span><h6 class="fw-800 mb-0">Healthy</h6>
                 </a>
             </div>
-            <div class="col-6 col-md-4 col-lg-3">
-                <a href="?mood=latenight" class="mood-card {% if current_mood == 'latenight' %}active{% endif %}">
-                    <span class="mood-emoji">🌙</span>
-                    <h6 class="fw-800 mb-1">Late Night</h6>
-                    <p class="x-small text-muted mb-0 d-none d-md-block">Open till Late</p>
+            <div class="col-6 col-md-3">
+                <a href="?mood=latenight" class="mood-card {% if request.GET.mood == 'latenight' %}active{% endif %}">
+                    <span class="mood-emoji">🌙</span><h6 class="fw-800 mb-0">Late Night</h6>
                 </a>
             </div>
-            <div class="col-6 col-md-4 col-lg-3">
-                <a href="?mood=party" class="mood-card {% if current_mood == 'party' %}active{% endif %}">
-                    <span class="mood-emoji">🎉</span>
-                    <h6 class="fw-800 mb-1">Party Vibe</h6>
-                    <p class="x-small text-muted mb-0 d-none d-md-block">Loud & Fun</p>
+            <div class="col-6 col-md-3">
+                <a href="?mood=party" class="mood-card {% if request.GET.mood == 'party' %}active{% endif %}">
+                    <span class="mood-emoji">🎉</span><h6 class="fw-800 mb-0">Party Vibe</h6>
                 </a>
             </div>
         </div>
 
-        <div class="text-center mb-5">
-            <h4 class="fw-800 mb-2">
-                {% if current_mood %}
-                    AI Suggestions for <span class="text-primary">"{{ current_mood|title }}"</span>
-                {% else %}
-                    Featured Intelligence
-                {% endif %}
-            </h4>
-            <div class="mx-auto bg-primary" style="height: 4px; width: 60px; border-radius: 10px;"></div>
-        </div>
-
-        {% if is_fallback %}
-        <div class="alert bg-white shadow-sm border-0 rounded-4 text-center mb-5 p-4">
-            <i class="fas fa-robot text-primary me-2 fa-lg"></i> 
-            Our AI is still training for <b>{{ current_mood }}</b>. Check out these highly-rated alternatives!
-        </div>
-        {% endif %}
+        <h4 class="fw-800 mb-4 text-center">Featured Intelligence</h4>
 
         <div class="row g-4 mb-5">
             {% for res in results %}
-            <div class="col-lg-4 col-md-6">
-                <div class="res-result-card d-flex flex-column shadow-sm">
-                    <div class="d-flex justify-content-between align-items-start mb-4">
-                        <div>
-                            <h5 class="fw-800 mb-1">{{ res.name }}</h5>
-                            <span class="text-muted small"><i class="fas fa-map-marker-alt me-1"></i> {{ res.locality|default:city }}</span>
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="res-result-card shadow-sm">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="text-truncate" style="max-width: 80%;">
+                            <h5 class="fw-800 mb-1 text-truncate">{{ res.name }}</h5>
+                            <span class="text-muted small"><i class="fas fa-map-marker-alt"></i> {{ res.locality|title }}</span>
                         </div>
-                        <div class="bg-success text-white px-3 py-1 rounded-pill fw-bold">{{ res.rating }} ★</div>
-                    </div>
-                    
-                    <div class="mb-4 d-flex flex-wrap gap-2">
-                        {% if 'pure veg' in res.cuisine|lower %}
-                            <span class="sentiment-tag" style="background: #e8f5e9; color: #2e7d32; border-color: #c8e6c9;">Pure Veg</span>
-                        {% endif %}
-                        <span class="sentiment-tag">AI Recommended</span>
-                        <span class="sentiment-tag">{{ res.match_score }}% Match</span>
+                        <span class="badge bg-success rounded-pill px-3 py-2">{{ res.rating }} ★</span>
                     </div>
                     
                     <p class="text-muted small mb-4 flex-grow-1">
-                        <i class="fas fa-utensils me-2 text-primary"></i>{{ res.cuisine|truncatechars:60 }}
+                        <i class="fas fa-utensils me-2 text-primary"></i> {{ res.cuisine|truncatechars:45 }}
                     </p>
                     
-                    <div class="pt-3 border-top">
-                        <a href="{% url 'restaurant_detail' pk=res.id %}" class="btn btn-primary w-100 rounded-pill fw-800 py-3 shadow-sm">
-                            ANALYZE DETAILS
-                        </a>
-                    </div>
+                    <a href="{% url 'restaurant_detail' res.id %}" class="btn-analyze shadow-sm">
+                        ANALYZE DETAILS
+                    </a>
                 </div>
             </div>
             {% empty %}
             <div class="col-12 text-center py-5">
-                <div class="bg-white d-inline-block p-5 rounded-5 shadow-sm">
-                    <img src="https://illustrations.popsy.co/blue/searching.svg" alt="Empty" style="height: 180px;" class="mb-4">
-                    <h5 class="text-muted fw-800">No Intelligence Data Found</h5>
-                    <p class="text-muted">Try switching cities or moods to find new spots.</p>
-                </div>
+                <img src="https://illustrations.popsy.co/blue/searching.svg" style="height: 150px; opacity: 0.6;" class="mb-3">
+                <h5 class="text-muted">No restaurants found. Try another search!</h5>
             </div>
             {% endfor %}
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
